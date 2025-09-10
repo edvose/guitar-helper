@@ -1,0 +1,18 @@
+<mat-toolbar>
+  @if (mobileModeService.isMobile()) {
+    <app-menu-button />
+  }
+
+  <!--Right side-->
+  <div #leftContent></div>
+
+  <!--Title-->
+  @if (topBarService.title() !== null) {
+    <span class="ml-2">{{topBarService.title()}}</span>
+  }
+
+  <span class="flex-auto"></span>
+
+  <!--Right side-->
+  <div #rightContent></div>
+</mat-toolbar>

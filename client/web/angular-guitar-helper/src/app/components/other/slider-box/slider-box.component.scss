@@ -1,0 +1,11 @@
+@use '@angular/material' as mat;
+
+:host {
+  width: 100%;
+}
+
+.slider {
+  @include mat.slider-overrides((
+    inactive-track-color: gray,
+  ));
+}

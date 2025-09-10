@@ -1,0 +1,9 @@
+<button mat-flat-button
+        [disabled]="disabled === undefined ? false : disabled.asReadonly()()"
+        (click)="onClick()"
+>
+  <p>{{text}}</p>
+  @if (matIcon !== undefined) {
+    <mat-icon>{{matIcon}}</mat-icon>
+  }
+</button>

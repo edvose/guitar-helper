@@ -1,0 +1,49 @@
+<div #container class="w-full">
+  <div class="flex flex-1 flex-col items-center justify-center max-w-0"
+       [ngStyle]="{
+         'height.px': containerHeight(),
+       }"
+  >
+    <div #carouselContainer class="flex flex-row flex-1 items-center justify-center"
+         [ngStyle]="{
+            'margin-left.px': carouselContainerWidth(),
+            'scale.%': chordsDivScale(),
+         }"
+    >
+      <!--Previous chords-->
+      @for (chord of previousChords().slice(PREVIOUS_CHORDS_COUNT - previousChordsDisplay); let i = $index; track i) {
+        @if (chord === undefined) {
+          <app-chord-card
+            [chord]="chords[0]"
+            class="scale-80 invisible"
+          />
+        } @else {
+          <app-chord-card
+            [chord]="chord"
+            class="scale-80 opacity-30"
+          />
+        }
+      }
+
+      <!--Current Chord-->
+      <app-chord-card
+        [chord]="currentChord()!"
+      />
+
+      <!--Next Chord-->
+      @for (chord of nextChords().slice(0, nextChordsDisplay); let i = $index; track i) {
+        @if (chord === undefined) {
+          <app-chord-card
+            [chord]="chords[0]"
+            class="scale-80 invisible"
+          />
+        } @else {
+          <app-chord-card
+            [chord]="chord"
+            class="scale-80 opacity-30"
+          />
+        }
+      }
+    </div>
+  </div>
+</div>
