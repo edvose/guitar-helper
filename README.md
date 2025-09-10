@@ -1,4 +1,4 @@
-# Guitar Helper (Work in Progress)
+# Guitar Helper (Unfinished and Deprecated)
 Application for becoming a better guitar player. Practice chords or tablature playing.
 
 ### Technologies
