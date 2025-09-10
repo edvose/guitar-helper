@@ -1,0 +1,57 @@
+  <div class="flex flex-1 flex-col w-full">
+    <mat-sidenav-container autosize class="h-full !bg-transparent">
+      @if (!mobileModeService.isMobile()) {
+        <mat-sidenav mode="side"
+                     position="end"
+                     [opened]="tuneMenuOpened()"
+                     class="!w-64 !rounded-none p-3 !bg-blue-200"
+        >
+          <app-chords-practice-tune-options />
+        </mat-sidenav>
+      }
+      <mat-sidenav-content class="!h-full">
+        <app-page-frame class="!h-full overflow-hidden">
+          <div class="flex flex-col flex-1">
+            <div class="flex flex-col flex-1 w-full justify-center">
+
+              <div class="flex flex-col w-11/12 self-center">
+                <!--Progress bar before switching chord-->
+                <div class="bg-gray-400 flex h-3 rounded-2xl mb-4 self-center" [ngStyle]="{'width.px': widthCarousel()}">
+                  <div class="bg-blue-500 flex rounded-2xl"
+                       [ngStyle]="{'width.px': chordsPracticeService.progressBarValue() * widthCarousel() / 100}"
+                  ></div>
+                </div>
+                <!--Chords carousel-->
+                <app-chords-carousel #chordsCarousel
+                                     [chords]="chordsPracticeService.practiceSetup().chords"
+                                     (carouselWidthEvent)="handleCarouselWidth($event)"
+                                     [chordsDisplaySequence]="chordsPracticeTuneService.chordsDisplaySequence()"
+                                     [previousChordsDisplay]="chordsPracticeTuneService.previousChordsCount()"
+                                     [nextChordsDisplay]="chordsPracticeTuneService.nextChordsCount()"
+                />
+                <!--Chords practice controls-->
+                <div class="flex flex-row items-center justify-center gap-2 mt-12">
+                  <button mat-raised-button
+                          color="primary"
+                          (click)="chordsPracticeService.startPractice(nextChord)"
+                          [disabled]="chordsPracticeService.isPracticeStarted()"
+                  >
+                    <mat-icon>play_circle</mat-icon>
+                    Start
+                  </button>
+                  <button mat-raised-button
+                          color="warn"
+                          (click)="chordsPracticeService.pausePractice()"
+                          [disabled]="!chordsPracticeService.isPracticeStarted()"
+                  >
+                    <mat-icon>pause_circle</mat-icon>
+                    Pause
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </app-page-frame>
+      </mat-sidenav-content>
+    </mat-sidenav-container>
+  </div>

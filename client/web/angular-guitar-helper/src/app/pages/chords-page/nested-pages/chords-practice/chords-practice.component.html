@@ -1,0 +1,79 @@
+<app-page-frame>
+  <div class="flex flex-1 flex-col">
+    <!--Select chords container-->
+    <div class="flex flex-col w-full">
+      <div class="flex flex-row justify-between items-center mb-2">
+        <div class="flex flex-row gap-3 items-center">
+          <h1 class="font-bold text-xl">Selected</h1>
+          <mat-chip-set aria-label="Fish selection">
+            <mat-chip disableRipple class="!hover:bg-transparent">{{selectedChords().size}} / {{MAX_CHORDS_PRACTICE}}</mat-chip>
+          </mat-chip-set>
+        </div>
+
+<!--        TODO add library functionality-->
+<!--        <app-text-icon-button text="Library" matIcon="folder_check" [onClick]="testFunc" />-->
+      </div>
+      <div class="border-2 border-dashed p-3 rounded">
+        @if (selectedChords().size > 0) {
+          <div class="flex flex-row overflow-scroll">
+            <div class="flex flex-row w-0">
+              <app-chords-gallery
+                [chords]="Array.from(selectedChords())"
+                [chordOnClick]="removeChordFromSelection"
+              />
+            </div>
+          </div>
+        } @else {
+          <div class="flex h-[179px] w-full justify-center items-center">
+            <h1>Select {{MIN_CHORDS_REQUIRED}} or more chords</h1>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!--All chords container-->
+    <div class="flex flex-col flex-1 mt-4">
+      <div class="flex flex-row justify-between items-center mb-2">
+        <h1 class="font-bold text-xl">Chords</h1>
+        <mat-button-toggle-group name="chordsGaller"
+                                 aria-label="Chords Gallery"
+                                 class="scale-75 mr-[-18px]"
+                                 [value]="selectedChordsGallery()"
+                                 (change)="handleChordsGalleryChange($event)"
+        >
+          @if (userService.isLoggedIn()) {
+            <mat-button-toggle [value]="GalleryChordsOption.DEFAULT">Default</mat-button-toggle>
+            <mat-button-toggle [value]="GalleryChordsOption.USER">User</mat-button-toggle>
+          }
+        </mat-button-toggle-group>
+      </div>
+      <div class="h-full rounded bg-gray-300">
+        <mat-grid-list cols="1" rowHeight="100%">
+          <mat-grid-tile>
+            <div class="flex flex-1 h-full w-full">
+              @if (selectedChordsGallery() === GalleryChordsOption.DEFAULT
+                  && defaultChords() !== null
+              ) {
+                <app-chords-tab-gallery
+                  [tabs]="Object.keys(defaultChords()!).sort()"
+                  [chords]="defaultChords()!"
+                  [chordOnClick]="addChordToSelection"
+                  [filterChordsPredicate]="predicateIsChordNotSelected"
+                />
+              } @else if (selectedChordsGallery() === GalleryChordsOption.USER
+                && userChords() !== null
+              ) {
+                <app-chords-tab-gallery
+                  [tabs]="Object.keys(userChords()!).sort()"
+                  [chords]="userChords()!"
+                  [chordOnClick]="addChordToSelection"
+                  [filterChordsPredicate]="predicateIsChordNotSelected"
+                />
+              }
+            </div>
+          </mat-grid-tile>
+        </mat-grid-list>
+      </div>
+    </div>
+  </div>
+</app-page-frame>
