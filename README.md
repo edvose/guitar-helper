@@ -1,8 +1,6 @@
 # Guitar Helper (Work in Progress)
 Application for becoming a better guitar player. Practice chords or tablature playing.
 
-[Link to DEMO](https://edvose.github.io/guitar-helper)
-
 ### Technologies
 - **Front-end**
   - Angular
