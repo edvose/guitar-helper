@@ -1,0 +1,54 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5133/chords_db
+    username: admin
+    password: admin
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:7555/realms/guitara
+          jwk-set-uri: http://localhost:7555/realms/guitara/protocol/openid-connect/certs
+  output:
+    ansi:
+      enabled: always
+
+springdoc:
+  swagger-ui.path: /swagger-ui
+  api-docs.path: /api-docs
+  show-actuator: true
+  packages-to-scan: org.guitara.chordsservice
+
+server:
+  port: 8211
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, metrics, prometheus
+      cors:
+        allowed-origins: http://localhost:4200
+  metrics:
+    tags:
+      application: ${spring.application.name}
+  tracing:
+    sampling:
+      probability: 1.0
+    enabled: true
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
+
+tracing:
+  url: http://localhost:4318/v1/traces

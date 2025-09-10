@@ -1,0 +1,174 @@
+version: '3.9'
+name: 'guitara'
+
+services:
+  # Services
+
+  # Security
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.2.5
+    restart: always
+    ports:
+      - '7555:8080'
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_HEALTH_ENABLED: true
+      KC_METRICS_ENABLED: true
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-db/keycloak_db
+      KC_DB_USERNAME: admin
+      KC_DB_PASSWORD: admin
+    depends_on:
+      - keycloak-db
+    command:
+      - start-dev
+
+  # Observability
+
+  grafana:
+    image: grafana/grafana:12.0.2
+    container_name: grafana
+    depends_on:
+      - prometheus
+      - grafana-db
+    restart: always
+    ports:
+      - '3000:3000'
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_AUTH_ANONYMOUS_ENABLED: 'true'
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Editor
+      GF_DATABASE_TYPE: postgres
+      GF_DATABASE_HOST: grafana-db
+      GF_DATABASE_NAME: grafana_db
+      GF_DATABASE_USER: admin
+      GF_DATABASE_PASSWORD: admin
+      GF_DATABASE_SSL_MODE: disable
+
+  prometheus:
+    image: prom/prometheus:v3.4.2
+    container_name: prometheus
+    restart: always
+    ports:
+      - '9090:9090'
+    volumes:
+      - ../observability/prometheus/prometheus-dev.yml:/etc/prometheus/prometheus-dev.yml
+      - prometheus-db:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus-dev.yml"
+
+  loki:
+    image: grafana/loki:3.4.1
+    container_name: loki
+    restart: always
+    ports:
+      - '3100:3100'
+
+
+
+
+
+
+  jaeger:
+    image: jaegertracing/jaeger:2.8.0
+    container_name: jaeger
+    restart: always
+#    volumes:
+#      - "../observability/jaeger/jaeger-dev.yml:/jaeger/jaeger-dev.yml"
+#      - "../observability/jaeger/config-ui.json:/cmd/jaeger/config-ui.json"
+#    command:
+#      - "--config=/jaeger/jaeger-dev.yml"
+    ports:
+      - '16686:16686'  # Jaeger UI
+      - '14268:14268'  # Jaeger HTTP API
+      - '14250:14250'  # Jaeger gRPC API
+      - '4317:4317'    # OpenTelemetry gRPC API
+      - '4318:4318'    # OpenTelemetry HTTP API
+    environment:
+      LOG_LEVEL: debug
+
+
+  # TODO move down
+  jaeger-db:
+    image: cassandra:4.1.9
+    restart: always
+    ports:
+      - '9042:9042'
+    volumes:
+      - jaeger-db:/var/lib/cassandra
+
+
+
+
+  # Database
+
+  keycloak-db:
+    image: postgres:14.18
+    restart: always
+    shm_size: 128mb
+    ports:
+      - '5233:5432'
+    volumes:
+      - keycloak-db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: admin
+      POSTGRES_DB: keycloak_db
+
+  chords-service-db:
+    image: postgres:14.18
+    restart: always
+    shm_size: 128mb
+    ports:
+      - '5133:5432'
+    volumes:
+      - chords-service-db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: admin
+      POSTGRES_DB: chords_db
+
+  notifications-service-db:
+    image: postgres:14.18
+    restart: always
+    shm_size: 128mb
+    ports:
+      - '5143:5432'
+    volumes:
+      - notifications-service-db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: admin
+      POSTGRES_DB: notifications_db
+
+  grafana-db:
+    image: postgres:14.18
+    restart: always
+    shm_size: 128mb
+    ports:
+      - '5482:5432'
+    volumes:
+      - grafana-db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: grafana_db
+
+volumes:
+  # Services
+  chords-service-db:
+    driver: local
+  notifications-service-db:
+    driver: local
+  # Security
+  keycloak-db:
+    driver: local
+  # Observability
+  grafana-db:
+    driver: local
+  prometheus-db:
+    driver: local
+  jaeger-db:
+    driver: local
